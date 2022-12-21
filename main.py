@@ -51,7 +51,7 @@ def admin_only(function):
     @wraps(function)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated or current_user.id != 1:
-            return abort(403)
+            return abort(403, description="User does not have permission.")
         else:
             return function(*args, **kwargs)
         
@@ -111,7 +111,7 @@ def register():
     return render_template("register.html", form=register_form)
 
 
-@app.route('/login')
+@app.route('/login', methods=["GET","POST"])
 def login():
     form = LoginForm()
 
@@ -160,7 +160,7 @@ def contact():
     return render_template("contact.html")
 
 
-@app.route("/new-post")
+@app.route("/new-post", methods=["GET","POST"])
 @admin_only
 def add_new_post():
     form = CreatePostForm()
@@ -179,7 +179,7 @@ def add_new_post():
     return render_template("make-post.html", form=form)
 
 
-@app.route("/edit-post/<int:post_id>")
+@app.route("/edit-post/<int:post_id>", methods=["GET","POST"])
 @admin_only
 def edit_post(post_id):
     post = BlogPost.query.get(post_id)
@@ -202,7 +202,7 @@ def edit_post(post_id):
     return render_template("make-post.html", form=edit_form)
 
 
-@app.route("/delete/<int:post_id>")
+@app.route("/delete/<int:post_id>", methods=["GET","POST"])
 @admin_only
 def delete_post(post_id):
     post_to_delete = BlogPost.query.get(post_id)
